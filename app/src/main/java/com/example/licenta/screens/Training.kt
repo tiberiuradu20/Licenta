@@ -137,8 +137,8 @@ fun previewTrainingScreen() {
 
 @Composable
 fun RoundNumberBadge(number: Int, day: String = "SUN") {
-    Column(modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)) {
-        Text(text = day, modifier = Modifier.padding(start = 10.dp, top = 8.dp, bottom = 5.dp))
+    Column(modifier = Modifier.padding(bottom = 8.dp, start = 5.dp)) {
+        Text(text = day, modifier = Modifier.padding(start = 5.dp, top = 8.dp, bottom = 5.dp))
 
         Box(
             contentAlignment = Alignment.Center,
@@ -161,7 +161,7 @@ fun calendarTraining() {
     Row(
         modifier = Modifier
             .wrapContentSize()
-            .padding(8.dp),
+            .padding(3.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         RoundNumberBadge(number = 30, day = "SUN")

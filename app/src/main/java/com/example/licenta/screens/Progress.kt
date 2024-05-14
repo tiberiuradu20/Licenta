@@ -104,7 +104,7 @@ fun progressScreen(navController: NavController, scrollState: ScrollState){
                     .padding(top = 15.dp, start = 12.dp)) {
                     Box(
                         modifier = Modifier
-                            .size(width = 130.dp, height = 100.dp)
+                            .size(width = 130.dp, height = 125.dp)
                             .background(Color.LightGray),
                     )
                     {

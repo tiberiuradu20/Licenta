@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
@@ -32,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -58,7 +61,7 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
         ) {
             Column(
                 modifier = Modifier
-
+                    .fillMaxSize()
                     .padding(top = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -227,7 +230,7 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 70.dp, start = 12.dp),
+                            .padding(top = 50.dp, start = 12.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Box(
@@ -250,7 +253,9 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                     Image(
                                         painter = painterResource(id = R.drawable.steps),
                                         contentDescription = null,
-                                        modifier = Modifier.padding(bottom = 12.dp).size(width=18.dp,height=27.dp)
+                                        modifier = Modifier
+                                            .padding(bottom = 12.dp)
+                                            .size(width = 18.dp, height = 27.dp)
                                     )
 
                                     Text(
@@ -264,14 +269,19 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                     Image(
                                         painter = painterResource(id = R.drawable.steps),
                                         contentDescription = null,
-                                        modifier = Modifier.padding(bottom = 12.dp).size(width=18.dp,height=27.dp)
+                                        modifier = Modifier
+                                            .padding(bottom = 12.dp)
+                                            .size(width = 18.dp, height = 27.dp)
                                     )
                                 }
 
                                 Image(
                                     painter = painterResource(id = R.drawable.mantrack),
                                     contentDescription = null,
-                                    modifier = Modifier.wrapContentSize().size(width=60.dp,height=70.dp).padding(top=0.dp)
+                                    modifier = Modifier
+                                        .wrapContentSize()
+                                        .size(width = 60.dp, height = 70.dp)
+                                        .padding(top = 0.dp)
                                 )
                                 Text(
                                     text = "0",
@@ -295,7 +305,7 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                         Box(
                             modifier = Modifier
                                 .background(Color.LightGray)
-                                .size(width=150.dp,height=200.dp),
+                                .size(width = 150.dp, height = 200.dp),
                         ) {
                             Column(
                                 modifier = Modifier
@@ -312,7 +322,9 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                     Image(
                                         painter = painterResource(id = R.drawable.water),
                                         contentDescription = null,
-                                        modifier = Modifier.padding(bottom = 12.dp).size(width=18.dp,height=27.dp)
+                                        modifier = Modifier
+                                            .padding(bottom = 12.dp)
+                                            .size(width = 18.dp, height = 27.dp)
                                     )
 
                                     Text(
@@ -326,14 +338,19 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                     Image(
                                         painter = painterResource(id = R.drawable.water),
                                         contentDescription = null,
-                                        modifier = Modifier.padding(bottom = 12.dp).size(width=18.dp,height=27.dp)
+                                        modifier = Modifier
+                                            .padding(bottom = 12.dp)
+                                            .size(width = 18.dp, height = 27.dp)
                                     )
                                 }
 
                                 Image(
                                     painter = painterResource(id = R.drawable.water),
                                     contentDescription = null,
-                                    modifier = Modifier.wrapContentSize().size(width=60.dp,height=70.dp).padding(top=0.dp)
+                                    modifier = Modifier
+                                        .wrapContentSize()
+                                        .size(width = 60.dp, height = 70.dp)
+                                        .padding(top = 0.dp)
                                 )
                                 Text(
                                     text = "0",
@@ -356,7 +373,84 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                             }
                         }
                     }
+                    Column(modifier= Modifier
+                        .fillMaxSize()
+                        .padding(top = 20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(
+/////
+                            modifier = Modifier
+                                .size(width = 340.dp, height = 160.dp)
+                                .background(Color.LightGray),
+
+                            ) {
+                            Column(
+                                modifier = Modifier
+                                    .wrapContentSize()
+                                    .padding(top = 9.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                        .padding(top = 5.dp)
+                                    ,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.cantar),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .padding(bottom = 12.dp)
+                                            .size(width = 18.dp, height = 27.dp)
+                                            .padding(end = 4.dp)
+                                    )
+
+                                    Text(
+                                        text = "Step Tracker",
+                                        style = TextStyle(
+                                            fontSize = 15.sp
+                                        ),
+                                        modifier = Modifier.padding(top = 5.dp)
+                                    )
+
+                                }
+
+                                Row(modifier= Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                                    horizontalArrangement = Arrangement.Center){
+                                    Text(text="75.0 kg | ",
+                                        style= TextStyle(fontSize = 17.sp,
+                                            fontWeight = FontWeight.Bold)
+                                    )
+                                    Text(text="3 kg left",
+                                        style= TextStyle(fontSize = 12.sp,
+                                            fontWeight = FontWeight.Normal),
+                                        modifier=Modifier.padding(top=4.dp)
+                                    )
+                                }
+
+                                    Button(
+                                        onClick = { /*TODO*/ },
+                                        modifier = Modifier.padding(top=15.dp)
+                                            .clip(RoundedCornerShape(22.dp))
+
+                                            .size(width=120.dp,height=50.dp),
+                                    ) {
+                                        Text(text = "RECORD", color = Color.White)
+                                    }
+
+                            }
+
+                        }
+
+                    }
                 }
+
+
+
             }
         }
     }

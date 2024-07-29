@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "267959912301",
+    "firebase_url": "https://licenta-d2083-default-rtdb.firebaseio.com",
+    "project_id": "licenta-d2083",
+    "storage_bucket": "licenta-d2083.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267959912301:android:018e09378f071884197c64",
+        "android_client_info": {
+          "package_name": "com.example.licenta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWTaGJv_u0nYpeoNkPqAvtia3idaVvy4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

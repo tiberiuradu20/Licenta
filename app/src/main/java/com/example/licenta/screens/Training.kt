@@ -1,22 +1,12 @@
 package com.example.licenta.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -29,7 +19,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,14 +34,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.licenta.ProfileViewModel
 import com.example.licenta.R
 import com.example.licenta.dataClasses.training
 import com.example.licenta.dateDeTest.Antrenament
 import com.example.licenta.screens.BottomMenu.BottomNavigationBar
+import java.util.Calendar
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun trainingScreen(navController: NavController, scrollState: ScrollState) {
+fun trainingScreen(navController: NavController, scrollState: ScrollState, profileViewModel: ProfileViewModel) {
+    var selectedDay by remember { mutableStateOf("Luni") }
+
+    LaunchedEffect(Unit) {
+        profileViewModel.setamAntrenamenteleSalvateDeUser()
+    }
+
+    val trainings by when (selectedDay) {
+        "Luni" -> profileViewModel.antrenamentulDeLuni
+        "Mar" -> profileViewModel.antrenamentulDeMarti
+        "Mie" -> profileViewModel.antrenamentulDeMiercuri
+        "Joi" -> profileViewModel.antrenamentulDeJoi
+        "Vin" -> profileViewModel.antrenamentulDeVineri
+        "Sam" -> profileViewModel.antrenamentulDeSambata
+        "Dum" -> profileViewModel.antrenamentulDeDuminica
+        else -> profileViewModel.antrenamentulDeLuni
+    }.observeAsState(emptyList())
+
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) {
@@ -101,10 +111,14 @@ fun trainingScreen(navController: NavController, scrollState: ScrollState) {
                         .fillMaxWidth()
                         .height(1.dp)
                         .padding(horizontal = 3.dp),
-                    thickness = 0.3.dp // Adjust padding to ensure the line starts and ends with the icons
+                    thickness = 0.3.dp
                 )
 
-                calendarTraining()
+                calendarTraining { day ->
+                    selectedDay = day
+
+                    Log.d("SelectedDay", "Selected day: $selectedDay")
+                }
 
                 Image(
                     painter = painterResource(id = R.drawable.first_training_image),
@@ -117,11 +131,13 @@ fun trainingScreen(navController: NavController, scrollState: ScrollState) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
-                        .scrollable(scrollState, orientation = Orientation.Vertical)
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
-                    items(Antrenament) { antrenament ->
-                        trainingCard(antrenament)
+                    items(trainings) { antrenament ->
+                        trainingCard(antrenament, profileViewModel = profileViewModel, navController = navController)
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(22.dp))
                     }
                 }
             }
@@ -129,73 +145,85 @@ fun trainingScreen(navController: NavController, scrollState: ScrollState) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun previewTrainingScreen() {
-    trainingScreen(rememberNavController(), rememberScrollState())
-}
-
-@Composable
-fun RoundNumberBadge(number: Int, day: String = "SUN") {
-    Column(modifier = Modifier.padding(bottom = 8.dp, start = 5.dp)) {
-        Text(text = day, modifier = Modifier.padding(start = 5.dp, top = 8.dp, bottom = 5.dp))
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(40.dp) // Setează dimensiunea cercului
-                .background(Color.LightGray, CircleShape) // Culoare de fundal și forma cercului
-        ) {
-            Text(
-                text = number.toString(),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-        }
+fun getCurrentDay(): String {
+    val calendar = Calendar.getInstance()
+    return when (calendar.get(Calendar.DAY_OF_WEEK)) {
+        Calendar.MONDAY -> "Luni"
+        Calendar.TUESDAY -> "Mar"
+        Calendar.WEDNESDAY -> "Mie"
+        Calendar.THURSDAY -> "Joi"
+        Calendar.FRIDAY -> "Vin"
+        Calendar.SATURDAY -> "Sam"
+        Calendar.SUNDAY -> "Dum"
+        else -> "Luni"
     }
 }
 
 @Composable
-fun calendarTraining() {
+fun calendarTraining(onDaySelected: (String) -> Unit) {
+    val currentDay = getCurrentDay()
     Row(
         modifier = Modifier
             .wrapContentSize()
             .padding(3.dp),
         horizontalArrangement = Arrangement.Center
     ) {
-        RoundNumberBadge(number = 30, day = "SUN")
-        RoundNumberBadge(number = 1, day = "MON")
-        RoundNumberBadge(number = 2, day = "TUE")
-        RoundNumberBadge(number = 3, day = "WED")
-        RoundNumberBadge(number = 4, day = "THU")
-        RoundNumberBadge(number = 5, day = "FRY")
-        RoundNumberBadge(number = 6, day = "SAT")
+        val days = listOf("Luni", "Mar", "Mie", "Joi", "Vin", "Sam", "Dum")
+
+        days.forEach { day ->
+            RoundNumberBadge(number = days.indexOf(day) + 1, day = day, isCurrentDay = day == currentDay) {
+                onDaySelected(day) // Asigură-te că ziua este transmisă corect
+            }
+        }
     }
 }
 
 @Composable
-fun trainingCard(antremanet: training) {
+fun RoundNumberBadge(number: Int, day: String, isCurrentDay: Boolean, onClick: () -> Unit) {
+    Column(modifier = Modifier.padding(bottom = 8.dp, start = 5.dp)) {
+        Text(text = day, modifier = Modifier.padding(start = 5.dp, top = 8.dp, bottom = 5.dp))
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(40.dp)
+                .background(if (isCurrentDay) Color.Red else Color.LightGray, CircleShape)
+                .clickable {
+                    onClick() // Asigură-te că onClick este apelat
+                }
+        ) {
+            Text(
+                text = number.toString(),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isCurrentDay) Color.White else Color.Black
+            )
+        }
+    }
+}
+
+@Composable
+fun trainingCard(antrenament: training, profileViewModel: ProfileViewModel, navController: NavController) {
     Row(
         modifier = Modifier
-            .fillMaxWidth() // Modifică de la fillMaxSize la fillMaxWidth pentru a folosi întreaga lățime disponibilă
-            .padding(horizontal = 16.dp, vertical = 8.dp), // Ajustează padding-ul pentru aliniere
-        verticalAlignment = Alignment.CenterVertically // Asigură alinierea verticală a elementelor în Row
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = antremanet.img),
+            painter = painterResource(id = antrenament.img),
             contentDescription = null,
             modifier = Modifier
                 .size(90.dp)
-                .padding(end = 12.dp) // Ajustează padding-ul pentru aliniere
+                .padding(end = 12.dp)
         )
         Column(
             modifier = Modifier
-                .weight(1f) // Folosește weight pentru a distribui spațiul rămas
-                .padding(end = 16.dp) // Ajustează padding-ul pentru aliniere
+                .weight(1f)
+                .padding(end = 16.dp)
         ) {
             Text(
-                text = antremanet.titlu,
+                text = antrenament.titlu,
                 modifier = Modifier.wrapContentSize(),
                 style = TextStyle(
                     fontSize = 17.sp,
@@ -208,14 +236,17 @@ fun trainingCard(antremanet: training) {
                     .padding(top = 4.dp)
             ) {
                 Text(
-                    text = "${antremanet.serii} serii",
+                    text = "${antrenament.serii} ",
                     modifier = Modifier.wrapContentSize(),
                     style = TextStyle(fontSize = 14.sp)
                 )
             }
         }
         Button(
-            onClick = { /* Handle onClick */ },
+            onClick = {
+                profileViewModel.setExercitiuCurentStart(antrenament)
+                navController.navigate("Tutorial")
+            },
             modifier = Modifier
                 .size(width = 70.dp, height = 30.dp),
             shape = RoundedCornerShape(12.dp),
@@ -230,4 +261,10 @@ fun trainingCard(antremanet: training) {
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun previewTrainingScreen() {
+    trainingScreen(rememberNavController(), rememberScrollState(), ProfileViewModel())
 }

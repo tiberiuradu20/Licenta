@@ -23,15 +23,21 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,14 +50,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.licenta.ProfileViewModel
 import com.example.licenta.R
 import com.example.licenta.dateDeTest.Antrenament
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun progressScreen(navController: NavController, scrollState: ScrollState) {
+fun progressScreen(navController: NavController, scrollState: ScrollState,profileViewModel: ProfileViewModel) {
+    var pahare by remember{ mutableStateOf(0)}
     Scaffold(
         bottomBar = { BottomMenu.BottomNavigationBar(navController = navController) }
     ) {
@@ -183,7 +192,7 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                     )
                                 )
                                 Text(
-                                    text = "75.0",
+                                    text = "${profileViewModel.getActualWeight()}",
                                     style = TextStyle(
                                         fontSize = 17.sp,
                                         fontWeight = FontWeight.Bold
@@ -323,7 +332,7 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                         painter = painterResource(id = R.drawable.water),
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .padding(bottom = 12.dp)
+                                            .padding(bottom = 4.dp)
                                             .size(width = 18.dp, height = 27.dp)
                                     )
 
@@ -332,14 +341,14 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                         style = TextStyle(
                                             fontSize = 15.sp
                                         ),
-                                        modifier=Modifier.padding(top=5.dp)
+                                        modifier=Modifier.padding(top=1.dp)
                                     )
 
                                     Image(
                                         painter = painterResource(id = R.drawable.water),
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .padding(bottom = 12.dp)
+                                            .padding(bottom = 0.dp)
                                             .size(width = 18.dp, height = 27.dp)
                                     )
                                 }
@@ -349,7 +358,7 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                     contentDescription = null,
                                     modifier = Modifier
                                         .wrapContentSize()
-                                        .size(width = 60.dp, height = 70.dp)
+                                        .size(width = 50.dp, height = 60.dp)
                                         .padding(top = 0.dp)
                                 )
                                 Text(
@@ -358,17 +367,41 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.Bold
                                     ),
-                                    modifier=Modifier.padding(top=5.dp)
+                                    modifier=Modifier.padding(top=3.dp)
                                 )
                                 Text(
-                                    text = "/8 cups",
+                                    text = "${pahare}/8 cups",
                                     style = TextStyle(
                                         fontSize = 17.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-
+                                        fontWeight = FontWeight.Bold)
                                 )
+                                Column(modifier=Modifier.fillMaxSize()) {
+                                   Row(modifier=Modifier.fillMaxWidth()
+                                       .fillMaxHeight(1f),
+                                       horizontalArrangement = Arrangement.SpaceBetween){
+                                    Button(
+                                        onClick = { pahare++ },
+                                        shape = CircleShape,
+                                        modifier = Modifier.size(width = 45.dp, height = 48.dp)
+                                            .padding(start=4.dp)
 
+                                    ) {
+                                      Text(text = "+", style = TextStyle(
+                                          fontSize=17.sp
+                                      ),color=Color.White)
+                                    }
+                                       Button(
+                                           onClick = { pahare-- },
+                                           shape = CircleShape,
+                                           modifier = Modifier.size(width = 45.dp, height =48.dp)
+                                                              .padding(end=4.dp)
+                                       ) {
+                                           Text(text = "-", style = TextStyle(
+                                               fontSize=17.sp
+                                           ),color=Color.White)
+                                       }
+                                }
+                                }
 
                             }
                         }
@@ -421,11 +454,17 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                     .fillMaxWidth()
                                     .wrapContentHeight(),
                                     horizontalArrangement = Arrangement.Center){
-                                    Text(text="75.0 kg | ",
+                                    Text(text="${profileViewModel.getActualWeight()} kg  | ",
                                         style= TextStyle(fontSize = 17.sp,
                                             fontWeight = FontWeight.Bold)
                                     )
-                                    Text(text="3 kg left",
+                                      var rezultat=""
+                                       if(profileViewModel.getActualWeight()-profileViewModel.getTargetWeight()<=0){
+                                           rezultat="Target acheived"
+                                       }
+                                    else
+                                        rezultat="${profileViewModel.getActualWeight()-profileViewModel.getTargetWeight()} kg left"
+                                    Text(text="$rezultat",
                                         style= TextStyle(fontSize = 12.sp,
                                             fontWeight = FontWeight.Normal),
                                         modifier=Modifier.padding(top=4.dp)
@@ -433,11 +472,13 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
                                 }
 
                                     Button(
-                                        onClick = { /*TODO*/ },
-                                        modifier = Modifier.padding(top=15.dp)
+                                        onClick = {
+                                                  navController.navigate("ActualWeight")
+                                        },
+                                        modifier = Modifier
+                                            .padding(top = 15.dp)
                                             .clip(RoundedCornerShape(22.dp))
-
-                                            .size(width=120.dp,height=50.dp),
+                                            .size(width = 120.dp, height = 50.dp),
                                     ) {
                                         Text(text = "RECORD", color = Color.White)
                                     }
@@ -460,5 +501,5 @@ fun progressScreen(navController: NavController, scrollState: ScrollState) {
 @Preview(showBackground = true)
 @Composable
 fun previewScreen(){
-    progressScreen(navController = rememberNavController(), scrollState = rememberScrollState() )
+    progressScreen(navController = rememberNavController(), scrollState = rememberScrollState(),viewModel() )
 }

@@ -26,6 +26,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.SnackbarHostState
 
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -42,6 +43,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.licenta.R
+import com.google.firebase.auth.FirebaseAuth
 import kotlin.math.round
 
 @Composable
@@ -132,7 +135,7 @@ fun MyTextFieldName(labelText:String,modifier: Modifier=Modifier,fara:Boolean=fa
     }
 }
 @Composable
-fun MyTextFieldEmail(labelText: String, modifier: Modifier = Modifier,fara:Boolean=false) {
+fun MyTextFieldEmail(labelText: String, modifier: Modifier = Modifier,fara:Boolean=false):String {
     val textState = remember { mutableStateOf("") }
 
     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
@@ -176,9 +179,10 @@ fun MyTextFieldEmail(labelText: String, modifier: Modifier = Modifier,fara:Boole
           )
       }
   }
+    return textState.value
 }
 @Composable
-fun MyTextFieldPassword(labelText: String, modifier: Modifier = Modifier,fara:Boolean=false) {
+fun MyTextFieldPassword(labelText: String, modifier: Modifier = Modifier,fara:Boolean=false):String {
     val password = remember { mutableStateOf("") }
 
     val passwordVisible = remember { mutableStateOf(false) }
@@ -227,6 +231,7 @@ fun MyTextFieldPassword(labelText: String, modifier: Modifier = Modifier,fara:Bo
             )
         }
     }
+    return password.value
 }
 @Composable
 fun alreadyHaveAnAccount(modifier: Modifier = Modifier,navController: NavController) {
@@ -263,9 +268,10 @@ fun alreadyHaveAnAccount(modifier: Modifier = Modifier,navController: NavControl
     )
 }
 @Composable
-fun passwordForgotten(){
+fun passwordForgotten(email:String){
     val initialString="Have you forgotten your password? "
     val finalString="Click Here"
+
     val annotatedString= buildAnnotatedString {
        withStyle(style= SpanStyle(fontSize = 14.sp)){
            append(initialString)
@@ -277,9 +283,30 @@ fun passwordForgotten(){
     }
     ClickableText(text = annotatedString, onClick ={offset->
         annotatedString.getStringAnnotations(offset,offset).firstOrNull()!!.let{
+
             Log.d("password","Stay calm and try to remember the password")
+            resetPassword(email)
         }
+
     } )
+}
+fun resetPassword(email: String) {
+    if (email.isBlank()) {return}
+
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    auth.sendPasswordResetEmail(email)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Email de resetare a parolei trimis cu succes
+                Log.d("Resetare Parolă", "Email de resetare a parolei trimis cu succes catre $email")
+
+            } else {
+                // Trimiterea emailului de resetare a parolei a eșuat
+                val errorMessage = task.exception?.message ?: "Failed to send reset email"
+
+                Log.d("Resetare Parolă", "Eroare: $errorMessage")
+            }
+        }
 }
 @Composable
 fun calendarComponent() {

@@ -1,5 +1,6 @@
 package com.example.licenta.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.licenta.ProfileViewModel
 import com.example.licenta.R
 import com.example.licenta.composables.MyTextFieldEmail
 
@@ -37,9 +39,14 @@ import com.example.licenta.composables.MyTextFieldName
 import com.example.licenta.composables.MyTextFieldPassword
 import com.example.licenta.composables.NormalTextComponent
 import com.example.licenta.composables.alreadyHaveAnAccount
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 @Composable
 fun SignUpScreen(navController: NavController){
+  var email=""
+  var parola=""
     Surface(modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background) {
         Column(modifier= Modifier
@@ -52,8 +59,8 @@ fun SignUpScreen(navController: NavController){
                 .padding(top=6.dp)) {
 
                 MyTextFieldName("Enter your Name")
-                MyTextFieldEmail("Type your email address")
-                MyTextFieldPassword(labelText = "Type your password")
+               email  = MyTextFieldEmail("Type your email address")
+               parola = MyTextFieldPassword(labelText = "Type your password")
                 MyTextFieldPassword(labelText = "Retype your password")
             }
             Row(modifier = Modifier
@@ -67,6 +74,7 @@ fun SignUpScreen(navController: NavController){
             Button(modifier= Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),onClick = {
+                createAccount(email,parola)
                 navController.navigate("SignInScreen")
 
             },
@@ -75,6 +83,26 @@ fun SignUpScreen(navController: NavController){
             }
         }
     }
+}
+private fun createAccount(email: String, password: String) {
+    if(email.isBlank() || password.isBlank())return
+    var auth: FirebaseAuth = Firebase.auth
+    auth.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener() { task ->
+            if (task.isSuccessful) {
+                // Sign in success, update UI with the signed-in user's information
+                val user = auth.currentUser
+                Log.d("Utilizator Creat", "createUserWithEmail:success")
+               // Toast.makeText(baseContext, "Account created successfully.",
+                //    Toast.LENGTH_SHORT).show()
+                // Update UI with user's info or navigate to another activity
+            } else {
+                // If sign in fails, display a message to the user.
+                Log.w("MainActivity", "createUserWithEmail:failure", task.exception)
+               // Toast.makeText(baseContext, "Authentication failed.",
+                   // Toast.LENGTH_SHORT).show()
+            }
+        }
 }
 @Preview(showBackground = true)
 @Composable

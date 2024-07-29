@@ -33,6 +33,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.licenta.R
 import com.example.licenta.ResponsiveImage
 import com.example.licenta.ui.theme.dimens
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import kotlin.math.round
 
 @Composable
@@ -91,8 +94,9 @@ fun welcomeScreen(navController: NavController){
                 Button(
                     modifier = Modifier.wrapContentSize(),
                     onClick = {
+                      Firebase.analytics.logEvent("Succes",null)
                        navController.navigate("SignUpScreen")
-                      // Log.d("dimensiune: ","${ecran}")
+
                     },
                     shape = RoundedCornerShape(16.dp)
                 ) {

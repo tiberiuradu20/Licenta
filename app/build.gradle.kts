@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")///modificat
+
 }
 
 android {
@@ -38,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -71,6 +74,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("com.google.firebase:firebase-crashlytics-buildtools:3.0.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -78,4 +82,25 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("com.google.android.gms:play-services-phenotype:17.0.0")
+    implementation("androidx.compose.material:material")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
+    implementation("androidx.compose.runtime:runtime:1.6.7")
+
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("androidx.compose.ui:ui-viewbinding:1.0.5")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-database")
+
+
+
 }
